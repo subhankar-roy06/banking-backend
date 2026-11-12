@@ -1,27 +1,28 @@
 const userModel = require('../models/user.model')
+const jwt = require('jsonwebtoken')
+/*
+    - user register Controller
+    - POST /api/auth/register
+*/
 
-async function userRegisterController(req, res) {
-    const { email, password, name } = req.body ?? {}
+async function userRegisterController(req, res){
 
-    try {
-        const user = await userModel.create({ email, password, name })
+    const {email,password,name} = req.body
 
-        return res.status(201).json({
-            id: user._id,
-            email: user.email,
-            name: user.name
+    const isExists = await userModel.findOne({
+        email:email
+    })
+    if(isExists){
+        return res.status(422).json({
+            message:"User already exists with the email",
+            status:"failed"
         })
-    } catch (error) {
-        if (error.code === 11000) {
-            return res.status(409).json({ message: 'Email already exists' })
-        }
-
-        if (error.name === 'ValidationError') {
-            return res.status(400).json({ message: error.message })
-        }
-
-        return res.status(500).json({ message: 'Unable to register user' })
     }
+    const user = await userModel.create({
+        email,password,name
+    })
 }
+module.exports = {
+    userRegisterController
 
-module.exports = userRegisterController
+}
