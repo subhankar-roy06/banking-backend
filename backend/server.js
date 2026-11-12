@@ -1,7 +1,7 @@
-require("dotenv").config({ path: require("path").join(__dirname, ".env") })
-
+require('dotenv').config()
 const app = require("./src/app")
 const connectDB = require("./src/config/db")
+const cookieParser = require('cookie-parser')
 
 async function startServer() {
     await connectDB()
@@ -11,8 +11,7 @@ async function startServer() {
     })
 }
 
-startServer().catch((err) => {
-    const message = err instanceof Error ? err.message : String(err)
-    console.error("Server startup failed:", message.replace(/mongodb(?:\+srv)?:\/\/\S+/gi, "[MongoDB URI]"))
-    process.exitCode = 1
+startServer().catch((error) => {
+    console.error("Failed to start server:", error)
+    process.exit(1)
 })
